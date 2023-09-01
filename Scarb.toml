@@ -11,3 +11,6 @@ starknet = "=2.1.1"
 [[target.starknet-contract]]
 allowed-libfuncs-list.name = "audited"
 casm = true
+
+[lib]
+allowed-libfuncs-list.name = "audited"
