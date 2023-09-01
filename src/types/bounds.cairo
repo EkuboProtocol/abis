@@ -5,14 +5,8 @@ use traits::{Into};
 use hash::{LegacyHash};
 
 // Tick bounds for a position
-#[derive(Copy, Drop, Serde, PartialEq)]
+#[derive(Copy, Drop, Serde, PartialEq, Hash)]
 struct Bounds {
     lower: i129,
     upper: i129
-}
-
-impl BoundsLegacyHash of LegacyHash<Bounds> {
-    fn hash(state: felt252, value: Bounds) -> felt252 {
-        LegacyHash::hash(state, (value.lower, value.upper))
-    }
 }
