@@ -1,0 +1,13 @@
+[package]
+name = "ekubo"
+version = "0.1.0"
+description = "Core interfaces of Ekubo Protocol"
+homepage = "https://docs.ekubo.org"
+cairo-version = "2.1.1"
+
+[dependencies]
+starknet = "=2.1.1"
+
+[[target.starknet-contract]]
+allowed-libfuncs-list.name = "audited"
+casm = true
