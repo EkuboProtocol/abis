@@ -3,9 +3,9 @@ use debug::{PrintTrait};
 use option::{Option, OptionTrait};
 use traits::{Into, TryInto};
 use starknet::storage_access::{StorePacking};
-use hash::{LegacyHash};
 use integer::{u128_safe_divmod, u128_as_non_zero};
 use zeroable::{Zeroable};
+use hash::{HashStateTrait, Hash};
 
 // Represents a signed integer in a 129 bit container, where the sign is 1 bit and the other 128 bits are magnitude
 // Note the sign can be true while mag is 0, meaning 1 value is wasted 
@@ -77,14 +77,15 @@ impl AddDeltaImpl of AddDeltaTrait {
     }
 }
 
-impl i129LegacyHash of LegacyHash<i129> {
-    fn hash(state: felt252, value: i129) -> felt252 {
+impl HashI129<S, +HashStateTrait<S>, +Drop<S>> of Hash<i129, S> {
+    #[inline(always)]
+    fn update_state(state: S, value: i129) -> S {
         let mut hashable: felt252 = value.mag.into();
         if value.is_negative() {
             hashable += 0x100000000000000000000000000000000; // 2**128
         }
 
-        pedersen(state, hashable)
+        state.update(hashable)
     }
 }
 
