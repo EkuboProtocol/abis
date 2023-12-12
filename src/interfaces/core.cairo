@@ -156,7 +156,7 @@ trait ICore<TStorage> {
         self: @TStorage, pool_key: PoolKey, from: i129, skip_ahead: u32
     ) -> (i129, bool);
 
-    // Return the previous initialized tick from the given tick, i.e. the initialized tick that is less than or equal to the given `from` tick
+    // Return the previously initialized tick from the given tick, i.e. the initialized tick that is less than or equal to the given `from` tick
     // Note this can also be used to check if the tick is initialized
     fn prev_initialized_tick(
         self: @TStorage, pool_key: PoolKey, from: i129, skip_ahead: u32
