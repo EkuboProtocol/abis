@@ -1,12 +1,12 @@
-use starknet::{ContractAddress, ClassHash};
+use ekubo::types::bounds::{Bounds};
+use ekubo::types::call_points::{CallPoints};
+use ekubo::types::delta::{Delta};
+use ekubo::types::fees_per_liquidity::{FeesPerLiquidity};
+use ekubo::types::i129::{i129};
+use ekubo::types::keys::{PositionKey, PoolKey, SavedBalanceKey};
 use ekubo::types::pool_price::{PoolPrice};
 use ekubo::types::position::{Position};
-use ekubo::types::fees_per_liquidity::{FeesPerLiquidity};
-use ekubo::types::keys::{PositionKey, PoolKey, SavedBalanceKey};
-use ekubo::types::i129::{i129};
-use ekubo::types::bounds::{Bounds};
-use ekubo::types::delta::{Delta};
-use ekubo::types::call_points::{CallPoints};
+use starknet::{ContractAddress, ClassHash};
 
 // This interface must be implemented by any contract that intends to call ICore#lock
 #[starknet::interface]
@@ -21,7 +21,7 @@ trait ILocker<TStorage> {
 // liquidity_delta is how the position's liquidity should be updated.
 #[derive(Copy, Drop, Serde)]
 struct UpdatePositionParameters {
-    salt: u64,
+    salt: felt252,
     bounds: Bounds,
     liquidity_delta: i129,
 }
@@ -35,7 +35,7 @@ struct SwapParameters {
     amount: i129,
     is_token1: bool,
     sqrt_ratio_limit: u256,
-    skip_ahead: u32,
+    skip_ahead: u128,
 }
 
 // Details about a liquidity position. Note the position may not exist, i.e. a position may be returned that has never had non-zero liquidity.
@@ -100,12 +100,6 @@ trait IExtension<TStorage> {
 
 #[starknet::interface]
 trait ICore<TStorage> {
-    // Sets the contract to withdrawals only mode, thus preventing any new capital being sent to the contract
-    fn set_withdrawal_only_mode(ref self: TStorage);
-
-    // Returns whether the contract is in withdrawal only mode
-    fn get_withdrawal_only_mode(self: @TStorage) -> bool;
-
     // Get the amount of withdrawal fees collected for the protocol
     fn get_protocol_fees_collected(self: @TStorage, token: ContractAddress) -> u128;
 
@@ -145,21 +139,18 @@ trait ICore<TStorage> {
         self: @TStorage, pool_key: PoolKey, position_key: PositionKey
     ) -> GetPositionWithFeesResult;
 
-    // Get the last recorded balance of a token for core, used by core for computing payment amounts
-    fn get_reserves(self: @TStorage, token: ContractAddress) -> u256;
-
     // Get the balance that is saved in core for a given account for use in a future lock (i.e. methods #save and #load)
     fn get_saved_balance(self: @TStorage, key: SavedBalanceKey) -> u128;
 
     // Return the next initialized tick from the given tick, i.e. the initialized tick that is greater than the given `from` tick
     fn next_initialized_tick(
-        self: @TStorage, pool_key: PoolKey, from: i129, skip_ahead: u32
+        self: @TStorage, pool_key: PoolKey, from: i129, skip_ahead: u128
     ) -> (i129, bool);
 
     // Return the previous initialized tick from the given tick, i.e. the initialized tick that is less than or equal to the given `from` tick
     // Note this can also be used to check if the tick is initialized
     fn prev_initialized_tick(
-        self: @TStorage, pool_key: PoolKey, from: i129, skip_ahead: u32
+        self: @TStorage, pool_key: PoolKey, from: i129, skip_ahead: u128
     ) -> (i129, bool);
 
     // Withdraws any fees collected by the contract (only the owner can call this function)
@@ -182,14 +173,16 @@ trait ICore<TStorage> {
     // Returns the next saved balance for the given key
     fn save(ref self: TStorage, key: SavedBalanceKey, amount: u128) -> u128;
 
-    // Deposit a given token into core. This is how payments are made. First send the token to core, and then call deposit to account the delta.
+    // Pay a given token into core. This is how payments are made. 
+    // First approve the core contract for the amount you want to spend, and then call pay.
+    // The core contract always takes the full allowance, so as not to leave any allowances.
     // Must be called within a ILocker#locked
-    fn deposit(ref self: TStorage, token_address: ContractAddress) -> u128;
+    fn pay(ref self: TStorage, token_address: ContractAddress);
 
     // Recall a balance previously saved via #save
     // Must be called within a ILocker#locked, but it can be called by addresses other than the locker
     // Returns the next saved balance for the given key
-    fn load(ref self: TStorage, token: ContractAddress, salt: u64, amount: u128) -> u128;
+    fn load(ref self: TStorage, token: ContractAddress, salt: felt252, amount: u128) -> u128;
 
     // Initialize a pool. This can happen outside of a lock callback because it does not require any tokens to be spent.
     fn initialize_pool(ref self: TStorage, pool_key: PoolKey, initial_tick: i129) -> u256;
@@ -206,16 +199,13 @@ trait ICore<TStorage> {
     ) -> Delta;
 
     // Collect the fees owed on a position
-    fn collect_fees(ref self: TStorage, pool_key: PoolKey, salt: u64, bounds: Bounds) -> Delta;
+    fn collect_fees(ref self: TStorage, pool_key: PoolKey, salt: felt252, bounds: Bounds) -> Delta;
 
     // Make a swap against a pool.
     // You must call this within a lock callback.
     fn swap(ref self: TStorage, pool_key: PoolKey, params: SwapParameters) -> Delta;
 
-    // Accumulates tokens to fees of a pool. 
-    // This is useful for extensions, e.g. extensions that do arbitrage based on external data and want to return profits to in-range LPs
+    // Accumulates tokens to fees of a pool. Only callable by the extension of the specified pool key, i.e. the current locker _must_ be the extension.
     // You must call this within a lock callback.
-    fn accumulate_as_fees(
-        ref self: TStorage, pool_key: PoolKey, amount0: u128, amount1: u128
-    ) -> Delta;
+    fn accumulate_as_fees(ref self: TStorage, pool_key: PoolKey, amount0: u128, amount1: u128);
 }
