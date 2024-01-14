@@ -15,7 +15,7 @@ const SRC5_ERC721_METADATA_ID: felt252 =
 #[starknet::interface]
 trait ISRC5<TStorage> {
     // Returns true if the contract supports the interface
-    // Note this is backwards compatible with the old spec that took a u32, since they
+    // Note this is backward compatible with the old spec that took a u32, since they
     // share a selector
     fn supportsInterface(self: @TStorage, interfaceId: felt252) -> bool;
 
