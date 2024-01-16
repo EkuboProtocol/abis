@@ -11,7 +11,7 @@ trait IERC721<TStorage> {
     fn setApprovalForAll(ref self: TStorage, operator: ContractAddress, approved: bool);
     fn getApproved(self: @TStorage, token_id: u256) -> ContractAddress;
     fn isApprovedForAll(self: @TStorage, owner: ContractAddress, operator: ContractAddress) -> bool;
-    fn tokenUri(self: @TStorage, token_id: u256) -> felt252;
+    fn tokenUri(self: @TStorage, token_id: u256) -> Array<felt252>;
 
     // snake_case
     fn balance_of(self: @TStorage, account: ContractAddress) -> u256;
@@ -24,5 +24,5 @@ trait IERC721<TStorage> {
     fn is_approved_for_all(
         self: @TStorage, owner: ContractAddress, operator: ContractAddress
     ) -> bool;
-    fn token_uri(self: @TStorage, token_id: u256) -> felt252;
+    fn token_uri(self: @TStorage, token_id: u256) -> Array<felt252>;
 }
