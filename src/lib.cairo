@@ -7,7 +7,10 @@ mod interfaces {
     mod router;
     mod token_registry;
 }
-mod shared_locker;
+mod components {
+    mod clear;
+    mod shared_locker;
+}
 mod types {
     mod bounds;
     mod call_points;
