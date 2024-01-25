@@ -1,23 +1,21 @@
-use array::{ArrayTrait};
-use debug::{PrintTrait};
-use option::{Option, OptionTrait};
-use traits::{Into, TryInto};
+use core::array::{ArrayTrait};
+use core::option::{Option, OptionTrait};
+use core::traits::{Into, TryInto};
 use starknet::storage_access::{StorePacking};
-use integer::{u128_safe_divmod, u128_as_non_zero};
-use zeroable::{Zeroable};
-use hash::{HashStateTrait, Hash};
+use core::num::traits::{Zero};
+use core::hash::{HashStateTrait, Hash};
 
 // Represents a signed integer in a 129 bit container, where the sign is 1 bit and the other 128 bits are magnitude
 // Note the sign can be true while mag is 0, meaning 1 value is wasted 
 // (i.e. sign == true && mag == 0 is redundant with sign == false && mag == 0)
-#[derive(Copy, Drop, Serde)]
-struct i129 {
-    mag: u128,
-    sign: bool,
+#[derive(Copy, Drop, Serde, Debug)]
+pub struct i129 {
+    pub mag: u128,
+    pub sign: bool,
 }
 
 #[generate_trait]
-impl i129TraitImpl of i129Trait {
+pub impl i129TraitImpl of i129Trait {
     fn is_negative(self: i129) -> bool {
         self.sign & (self.mag.is_non_zero())
     }
@@ -25,28 +23,21 @@ impl i129TraitImpl of i129Trait {
 
 
 #[inline(always)]
-fn i129_new(mag: u128, sign: bool) -> i129 {
+pub fn i129_new(mag: u128, sign: bool) -> i129 {
     i129 { mag, sign: sign & (mag != 0) }
 }
 
-impl i129Zeroable of Zeroable<i129> {
+impl i129Zero of Zero<i129> {
     fn zero() -> i129 {
         i129 { mag: 0, sign: false }
     }
 
-    fn is_zero(self: i129) -> bool {
+    fn is_zero(self: @i129) -> bool {
         self.mag.is_zero()
     }
 
-    fn is_non_zero(self: i129) -> bool {
+    fn is_non_zero(self: @i129) -> bool {
         self.mag.is_non_zero()
-    }
-}
-
-impl i129PrintTrait of PrintTrait<i129> {
-    fn print(self: i129) {
-        self.sign.print();
-        self.mag.print();
     }
 }
 
@@ -67,7 +58,7 @@ impl i129TryIntoU128 of TryInto<i129, u128> {
 }
 
 #[generate_trait]
-impl AddDeltaImpl of AddDeltaTrait {
+pub impl AddDeltaImpl of AddDeltaTrait {
     fn add(self: u128, delta: i129) -> u128 {
         (self.into() + delta).try_into().expect('ADD_DELTA')
     }
@@ -170,22 +161,29 @@ impl i129PartialEq of PartialEq<i129> {
 }
 
 impl i129PartialOrd of PartialOrd<i129> {
+    #[inline(always)]
     fn le(lhs: i129, rhs: i129) -> bool {
         i129_le(lhs, rhs)
     }
+
+    #[inline(always)]
     fn ge(lhs: i129, rhs: i129) -> bool {
         i129_ge(lhs, rhs)
     }
 
+    #[inline(always)]
     fn lt(lhs: i129, rhs: i129) -> bool {
         i129_lt(lhs, rhs)
     }
+
+    #[inline(always)]
     fn gt(lhs: i129, rhs: i129) -> bool {
         i129_gt(lhs, rhs)
     }
 }
 
 impl i129Neg of Neg<i129> {
+    #[inline(always)]
     fn neg(a: i129) -> i129 {
         i129_neg(a)
     }

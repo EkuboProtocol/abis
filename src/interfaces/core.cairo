@@ -10,7 +10,7 @@ use starknet::{ContractAddress, ClassHash};
 
 // This interface must be implemented by any contract that intends to call ICore#lock
 #[starknet::interface]
-trait ILocker<TStorage> {
+pub trait ILocker<TStorage> {
     // This function is called on the caller of lock, i.e. a callback
     // The input is the data passed to ICore#lock, the output is passed back through as the return value of #lock
     fn locked(ref self: TStorage, id: u32, data: Array<felt252>) -> Array<felt252>;
@@ -20,10 +20,10 @@ trait ILocker<TStorage> {
 // bounds is the lower and upper price range of the position, expressed in terms of log base sqrt 1.000001 of token1/token0.
 // liquidity_delta is how the position's liquidity should be updated.
 #[derive(Copy, Drop, Serde)]
-struct UpdatePositionParameters {
-    salt: felt252,
-    bounds: Bounds,
-    liquidity_delta: i129,
+pub struct UpdatePositionParameters {
+    pub salt: felt252,
+    pub bounds: Bounds,
+    pub liquidity_delta: i129,
 }
 
 // The amount is the amount of token0 or token1 to swap, depending on is_token1. A negative amount implies an exact-output swap.
@@ -31,34 +31,34 @@ struct UpdatePositionParameters {
 // sqrt_ratio_limit is a limit on how far the price can move as part of the swap. Note this must always be specified, and must be between the maximum and minimum sqrt ratio.
 // skip_ahead is an optimization parameter for large swaps across many uninitialized ticks to reduce the number of swap iterations that must be performed
 #[derive(Copy, Drop, Serde)]
-struct SwapParameters {
-    amount: i129,
-    is_token1: bool,
-    sqrt_ratio_limit: u256,
-    skip_ahead: u128,
+pub struct SwapParameters {
+    pub amount: i129,
+    pub is_token1: bool,
+    pub sqrt_ratio_limit: u256,
+    pub skip_ahead: u128,
 }
 
 // Details about a liquidity position. Note the position may not exist, i.e. a position may be returned that has never had non-zero liquidity.
 // Note you should not rely on fees per liquidity inside to be consistent across calls, since it also is used to track accumulated fees over time
 #[derive(Copy, Drop, Serde)]
-struct GetPositionWithFeesResult {
-    position: Position,
-    fees0: u128,
-    fees1: u128,
+pub struct GetPositionWithFeesResult {
+    pub position: Position,
+    pub fees0: u128,
+    pub fees1: u128,
     // the current value of fees per liquidity inside is required to compute the fees, so it is also returned to save computation
-    fees_per_liquidity_inside_current: FeesPerLiquidity,
+    pub fees_per_liquidity_inside_current: FeesPerLiquidity,
 }
 
 // The current state of the queried locker
 #[derive(Copy, Drop, Serde)]
-struct LockerState {
-    address: ContractAddress,
-    nonzero_delta_count: u32
+pub struct LockerState {
+    pub address: ContractAddress,
+    pub nonzero_delta_count: u32
 }
 
 // An extension is an optional contract that can be specified as part of a pool key to modify pool behavior
 #[starknet::interface]
-trait IExtension<TStorage> {
+pub trait IExtension<TStorage> {
     // Called before a pool is initialized, and returns where the extension should be called in future operations
     fn before_initialize_pool(
         ref self: TStorage, caller: ContractAddress, pool_key: PoolKey, initial_tick: i129
@@ -99,7 +99,7 @@ trait IExtension<TStorage> {
 }
 
 #[starknet::interface]
-trait ICore<TStorage> {
+pub trait ICore<TStorage> {
     // Get the amount of withdrawal fees collected for the protocol
     fn get_protocol_fees_collected(self: @TStorage, token: ContractAddress) -> u128;
 

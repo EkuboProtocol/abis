@@ -5,24 +5,24 @@ use ekubo::types::pool_price::{PoolPrice};
 use starknet::{ContractAddress};
 
 #[derive(Copy, Drop, Serde, PartialEq)]
-struct GetTokenInfoResult {
-    pool_price: PoolPrice,
-    liquidity: u128,
-    amount0: u128,
-    amount1: u128,
-    fees0: u128,
-    fees1: u128,
+pub struct GetTokenInfoResult {
+    pub pool_price: PoolPrice,
+    pub liquidity: u128,
+    pub amount0: u128,
+    pub amount1: u128,
+    pub fees0: u128,
+    pub fees1: u128,
 }
 
 #[derive(Copy, Drop, Serde)]
-struct GetTokenInfoRequest {
-    id: u64,
-    pool_key: PoolKey,
-    bounds: Bounds
+pub struct GetTokenInfoRequest {
+    pub id: u64,
+    pub pool_key: PoolKey,
+    pub bounds: Bounds
 }
 
 #[starknet::interface]
-trait IPositions<TStorage> {
+pub trait IPositions<TStorage> {
     // Update the token URI base of the owned NFT
     fn update_token_uri_base(ref self: TStorage, token_uri_base: felt252);
 

@@ -2,7 +2,7 @@ use starknet::{ContractAddress};
 
 // A simplified interface for a fungible token standard. 
 #[starknet::interface]
-trait IERC20<TContractState> {
+pub trait IERC20<TContractState> {
     // Transfers the amount to the recipient from the caller
     // Note there is no bool return value in this interface, because we do not use it. It is assumed
     // the transfer will revert if the caller has insufficient balance.

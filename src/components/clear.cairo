@@ -3,7 +3,7 @@ use starknet::{ContractAddress, get_contract_address, get_caller_address};
 
 // This component is embedded in the Router and Positions contracts
 #[starknet::interface]
-trait IClear<TContractState> {
+pub trait IClear<TContractState> {
     // Clears the contract's balance of the given token to the caller.
     fn clear(self: @TContractState, token: IERC20Dispatcher) -> u256;
     // Clears the contract's balance of the given token to the caller, and reverts if it's less than the given minimum amount

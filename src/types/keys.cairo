@@ -1,7 +1,6 @@
 use starknet::{contract_address_const, ContractAddress};
-use option::{Option, OptionTrait};
-use traits::{Into, TryInto};
-use zeroable::{Zeroable};
+use core::option::{Option, OptionTrait};
+use core::traits::{Into, TryInto};
 use ekubo::types::i129::{i129};
 use ekubo::types::bounds::{Bounds};
 
@@ -12,22 +11,22 @@ use ekubo::types::bounds::{Bounds};
 // tick_spacing is the minimum spacing between initialized ticks, i.e. ticks that positions may use
 // extension is the address of a contract that implements additional functionality for the pool
 #[derive(Copy, Drop, Serde, PartialEq, Hash)]
-struct PoolKey {
-    token0: ContractAddress,
-    token1: ContractAddress,
-    fee: u128,
-    tick_spacing: u128,
-    extension: ContractAddress,
+pub struct PoolKey {
+    pub token0: ContractAddress,
+    pub token1: ContractAddress,
+    pub fee: u128,
+    pub tick_spacing: u128,
+    pub extension: ContractAddress,
 }
 
 // salt is a random number specified by the owner to allow a single address to control many positions with the same pool and bounds
 // owner is the immutable address of the position
 // bounds is the price range where the liquidity of the position is active
 #[derive(Copy, Drop, Serde, PartialEq, Hash)]
-struct PositionKey {
-    salt: u64,
-    owner: ContractAddress,
-    bounds: Bounds,
+pub struct PositionKey {
+    pub salt: u64,
+    pub owner: ContractAddress,
+    pub bounds: Bounds,
 }
 
 
@@ -35,8 +34,8 @@ struct PositionKey {
 // token is the address of the token for which the balance is saved
 // salt is a random number to allow a single address to own separate saved balances
 #[derive(Copy, Drop, Serde, PartialEq, Hash)]
-struct SavedBalanceKey {
-    owner: ContractAddress,
-    token: ContractAddress,
-    salt: u64,
+pub struct SavedBalanceKey {
+    pub owner: ContractAddress,
+    pub token: ContractAddress,
+    pub salt: u64,
 }

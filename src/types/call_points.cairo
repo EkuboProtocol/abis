@@ -1,16 +1,16 @@
 use core::array::ArrayTrait;
-use serde::Serde;
+use core::serde::Serde;
 use starknet::storage_access::{StorePacking};
-use traits::{Into};
+use core::traits::{Into};
 
 // The points at which an extension should be called
 #[derive(Copy, Drop, Serde, PartialEq)]
-struct CallPoints {
-    after_initialize_pool: bool,
-    before_swap: bool,
-    after_swap: bool,
-    before_update_position: bool,
-    after_update_position: bool,
+pub struct CallPoints {
+    pub after_initialize_pool: bool,
+    pub before_swap: bool,
+    pub after_swap: bool,
+    pub before_update_position: bool,
+    pub after_update_position: bool,
 }
 
 impl CallPointsDefault of Default<CallPoints> {
@@ -27,7 +27,7 @@ impl CallPointsDefault of Default<CallPoints> {
 }
 
 #[inline(always)]
-fn all_call_points() -> CallPoints {
+pub fn all_call_points() -> CallPoints {
     CallPoints {
         after_initialize_pool: true,
         before_swap: true,

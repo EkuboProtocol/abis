@@ -6,7 +6,7 @@ use ekubo::interfaces::core::{ICoreDispatcher, ICoreDispatcherTrait};
 use ekubo::interfaces::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
 use ekubo::types::i129::{i129};
 use starknet::{
-    get_caller_address, get_contract_address, call_contract_syscall, ContractAddress,
+    get_caller_address, get_contract_address, syscalls::{call_contract_syscall}, ContractAddress,
     SyscallResultTrait
 };
 
@@ -21,7 +21,7 @@ fn call_core_with_callback<TInput, TOutput, +Serde<TInput>, +Serde<TOutput>>(
     Serde::deserialize(ref output_span).expect('DESERIALIZE_RESULT_FAILED')
 }
 
-fn consume_callback_data<TInput, +Serde<TInput>>(
+pub fn consume_callback_data<TInput, +Serde<TInput>>(
     core: ICoreDispatcher, callback_data: Array<felt252>
 ) -> TInput {
     assert(get_caller_address() == core.contract_address, 'CORE_ONLY');
@@ -29,7 +29,7 @@ fn consume_callback_data<TInput, +Serde<TInput>>(
     Serde::deserialize(ref span).expect('DESERIALIZE_INPUT_FAILED')
 }
 
-fn handle_delta(
+pub fn handle_delta(
     core: ICoreDispatcher, token: ContractAddress, delta: i129, recipient: ContractAddress
 ) {
     if (delta.is_non_zero()) {

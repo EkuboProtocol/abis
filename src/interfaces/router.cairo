@@ -4,26 +4,26 @@ use ekubo::types::keys::{PoolKey};
 use starknet::{ContractAddress};
 
 #[derive(Serde, Copy, Drop)]
-struct RouteNode {
-    pool_key: PoolKey,
-    sqrt_ratio_limit: u256,
-    skip_ahead: u128,
+pub struct RouteNode {
+    pub pool_key: PoolKey,
+    pub sqrt_ratio_limit: u256,
+    pub skip_ahead: u128,
 }
 
 #[derive(Serde, Copy, Drop)]
-struct TokenAmount {
-    token: ContractAddress,
-    amount: i129,
+pub struct TokenAmount {
+    pub token: ContractAddress,
+    pub amount: i129,
 }
 
 #[derive(Serde, Copy, Drop)]
-struct Depth {
-    token0: u128,
-    token1: u128,
+pub struct Depth {
+    pub token0: u128,
+    pub token1: u128,
 }
 
 #[starknet::interface]
-trait IRouter<TContractState> {
+pub trait IRouter<TContractState> {
     // Does a single swap against a single node using tokens held by this contract, and receives the output to this contract
     fn swap(ref self: TContractState, node: RouteNode, token_amount: TokenAmount) -> Delta;
 

@@ -1,24 +1,24 @@
-mod interfaces {
-    mod erc20;
-    mod erc721;
-    mod core;
-    mod src5;
-    mod positions;
-    mod router;
-    mod token_registry;
+pub mod interfaces {
+    pub mod erc20;
+    pub mod erc721;
+    pub mod core;
+    pub mod src5;
+    pub mod positions;
+    pub mod router;
+    pub mod token_registry;
 }
-mod components {
-    mod clear;
-    mod shared_locker;
+pub mod components {
+    pub mod clear;
+    pub mod shared_locker;
 }
-mod types {
-    mod bounds;
-    mod call_points;
-    mod delta;
-    mod fees_per_liquidity;
-    mod i129;
-    mod keys;
-    mod pool_price;
-    mod position;
+pub mod types {
+    pub mod bounds;
+    pub mod call_points;
+    pub mod delta;
+    pub mod fees_per_liquidity;
+    pub mod i129;
+    pub mod keys;
+    pub mod pool_price;
+    pub mod position;
 }
 
