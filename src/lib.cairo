@@ -10,6 +10,7 @@ pub mod interfaces {
 pub mod components {
     pub mod clear;
     pub mod shared_locker;
+    pub mod util;
 }
 pub mod types {
     pub mod bounds;

@@ -31,8 +31,8 @@ pub trait IPositions<TStorage> {
 
     // Returns the principal and fee amount for a set of positions
     fn get_tokens_info(
-        self: @TStorage, params: Array<GetTokenInfoRequest>
-    ) -> Array<GetTokenInfoResult>;
+        self: @TStorage, params: Span<GetTokenInfoRequest>
+    ) -> Span<GetTokenInfoResult>;
 
     // Return the principal and fee amounts owed to a position
     fn get_token_info(
@@ -110,4 +110,8 @@ pub trait IPositions<TStorage> {
         min_token0: u128,
         min_token1: u128
     ) -> (u128, u128);
+
+    // Returns the price of a pool after making an empty update to a fake position, which is useful for adding liquidity to extensions
+    // with unknown before/after behavior.
+    fn get_pool_price(ref self: TStorage, pool_key: PoolKey) -> PoolPrice;
 }

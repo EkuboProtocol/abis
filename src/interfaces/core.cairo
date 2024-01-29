@@ -13,7 +13,7 @@ use starknet::{ContractAddress, ClassHash};
 pub trait ILocker<TStorage> {
     // This function is called on the caller of lock, i.e. a callback
     // The input is the data passed to ICore#lock, the output is passed back through as the return value of #lock
-    fn locked(ref self: TStorage, id: u32, data: Array<felt252>) -> Array<felt252>;
+    fn locked(ref self: TStorage, id: u32, data: Span<felt252>) -> Span<felt252>;
 }
 
 // Passed as an argument to update a position. The owner of the position is implicitly the locker.
@@ -160,7 +160,7 @@ pub trait ICore<TStorage> {
 
     // Locks the core contract, allowing other functions to be called that require locking.
     // The lock callback is called with the input data, and the returned array is passed through to the caller.
-    fn lock(ref self: TStorage, data: Array<felt252>) -> Array<felt252>;
+    fn lock(ref self: TStorage, data: Span<felt252>) -> Span<felt252>;
 
     // Withdraws a given token from core. This is used to withdraw the output of swaps or burnt liquidity, and also for flash loans.
     // Must be called within a ILocker#locked

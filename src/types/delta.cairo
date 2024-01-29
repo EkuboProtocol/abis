@@ -14,7 +14,7 @@ impl ZeroableDelta of Zero<Delta> {
     fn zero() -> Delta {
         Delta { amount0: Zero::zero(), amount1: Zero::zero() }
     }
-    fn is_zero(self:@ Delta) -> bool {
+    fn is_zero(self: @Delta) -> bool {
         self.amount0.is_zero() & self.amount1.is_zero()
     }
     fn is_non_zero(self: @Delta) -> bool {

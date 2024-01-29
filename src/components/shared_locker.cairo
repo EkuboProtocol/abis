@@ -10,23 +10,22 @@ use starknet::{
     SyscallResultTrait
 };
 
-fn call_core_with_callback<TInput, TOutput, +Serde<TInput>, +Serde<TOutput>>(
+pub fn call_core_with_callback<TInput, TOutput, +Serde<TInput>, +Serde<TOutput>>(
     core: ICoreDispatcher, input: @TInput
 ) -> TOutput {
     let mut input_data: Array<felt252> = ArrayTrait::new();
     Serde::serialize(input, ref input_data);
 
-    let mut output_span = core.lock(input_data).span();
+    let mut output_span = core.lock(input_data.span());
 
     Serde::deserialize(ref output_span).expect('DESERIALIZE_RESULT_FAILED')
 }
 
 pub fn consume_callback_data<TInput, +Serde<TInput>>(
-    core: ICoreDispatcher, callback_data: Array<felt252>
+    core: ICoreDispatcher, mut callback_data: Span<felt252>
 ) -> TInput {
     assert(get_caller_address() == core.contract_address, 'CORE_ONLY');
-    let mut span = callback_data.span();
-    Serde::deserialize(ref span).expect('DESERIALIZE_INPUT_FAILED')
+    Serde::deserialize(ref callback_data).expect('DESERIALIZE_INPUT_FAILED')
 }
 
 pub fn handle_delta(
