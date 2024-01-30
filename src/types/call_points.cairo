@@ -112,3 +112,8 @@ impl U8TryIntoCallPoints of TryInto<u8, CallPoints> {
     }
 }
 
+
+#[test]
+fn test_try_into() {
+    let x: CallPoints = 128_u8.try_into().unwrap();
+}
