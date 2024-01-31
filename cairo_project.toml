@@ -1,0 +1,5 @@
+[config.global]
+edition = "2023_11"
+
+[crate_roots]
+ekubo = "src"
