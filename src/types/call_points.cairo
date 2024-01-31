@@ -113,7 +113,22 @@ impl U8TryIntoCallPoints of TryInto<u8, CallPoints> {
 }
 
 
-#[test]
-fn test_try_into() {
-    let x: CallPoints = 128_u8.try_into().unwrap();
+#[starknet::interface]
+trait Interface<T> {
+    fn x(self: @T) -> CallPoints;
 }
+
+#[starknet::contract]
+mod Contract {
+    use super::{CallPoints};
+    #[storage]
+    struct Storage {}
+
+    #[abi(embed_v0)]
+    impl Impl of super::Interface<ContractState> {
+        fn x(self: @ContractState) -> CallPoints {
+            128_u8.try_into().unwrap()
+        }
+    }
+}
+
