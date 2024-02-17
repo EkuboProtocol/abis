@@ -1,4 +1,5 @@
 use ekubo::interfaces::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
+use core::num::traits::{Zero};
 use starknet::{ContractAddress, get_contract_address, get_caller_address};
 
 // This component is embedded in the Router and Positions contracts
@@ -12,4 +13,31 @@ pub trait IClear<TContractState> {
     fn clear_minimum_to_recipient(
         self: @TContractState, token: IERC20Dispatcher, minimum: u256, recipient: ContractAddress
     ) -> u256;
+}
+
+#[starknet::embeddable]
+pub impl ClearImpl<TContractState> of IClear<TContractState> {
+    #[inline(always)]
+    fn clear(self: @TContractState, token: IERC20Dispatcher) -> u256 {
+        self.clear_minimum_to_recipient(token, 0, get_caller_address())
+    }
+
+    #[inline(always)]
+    fn clear_minimum(self: @TContractState, token: IERC20Dispatcher, minimum: u256) -> u256 {
+        self.clear_minimum_to_recipient(token, minimum, get_caller_address())
+    }
+
+    #[inline(always)]
+    fn clear_minimum_to_recipient(
+        self: @TContractState, token: IERC20Dispatcher, minimum: u256, recipient: ContractAddress
+    ) -> u256 {
+        let balance = token.balanceOf(get_contract_address());
+        if minimum.is_non_zero() {
+            assert(balance >= minimum, 'CLEAR_AT_LEAST_MINIMUM');
+        }
+        if balance.is_non_zero() {
+            token.transfer(recipient, balance);
+        }
+        balance
+    }
 }
