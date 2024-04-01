@@ -1,8 +1,9 @@
+use ekubo::extensions::interfaces::twamm::{OrderKey, OrderInfo};
 use ekubo::types::bounds::{Bounds};
 use ekubo::types::i129::{i129};
 use ekubo::types::keys::{PoolKey};
 use ekubo::types::pool_price::{PoolPrice};
-use starknet::{ContractAddress};
+use starknet::{ContractAddress, ClassHash};
 
 #[derive(Copy, Drop, Serde, PartialEq)]
 pub struct GetTokenInfoResult {
@@ -23,11 +24,17 @@ pub struct GetTokenInfoRequest {
 
 #[starknet::interface]
 pub trait IPositions<TStorage> {
-    // Update the token URI base of the owned NFT
-    fn update_token_uri_base(ref self: TStorage, token_uri_base: felt252);
-
     // Returns the address of the NFT contract that represents ownership of a position
     fn get_nft_address(self: @TStorage) -> ContractAddress;
+
+    // Upgrades the classhash of the nft
+    fn upgrade_nft(ref self: TStorage, class_hash: ClassHash);
+
+    // Set the contract address of the twamm
+    fn set_twamm(ref self: TStorage, twamm_address: ContractAddress);
+
+    // Returns the twamm contract address
+    fn get_twamm_address(self: @TStorage) -> ContractAddress;
 
     // Returns the principal and fee amount for a set of positions
     fn get_tokens_info(
@@ -39,16 +46,27 @@ pub trait IPositions<TStorage> {
         self: @TStorage, id: u64, pool_key: PoolKey, bounds: Bounds
     ) -> GetTokenInfoResult;
 
+    // Returns the sale rate, remaining sell amount and purchased amount for a set of orders
+    fn get_orders_info(self: @TStorage, params: Span<(u64, OrderKey)>) -> Span<OrderInfo>;
+
+    // Returns the sale rate, remaining sell amount and purchased amount for an order
+    fn get_order_info(self: @TStorage, id: u64, order_key: OrderKey) -> OrderInfo;
+
     // Create a new NFT that represents liquidity in a pool. Returns the newly minted token ID
+    // This function is deprecated. The pool_key and bounds arguments are not used. Instead, use mint_v2.
     fn mint(ref self: TStorage, pool_key: PoolKey, bounds: Bounds) -> u64;
 
     // Same as above but includes a referrer in the emitted event
+    // This function is deprecated. The pool_key and bounds arguments are not used. Instead, use mint_v2.
     fn mint_with_referrer(
         ref self: TStorage, pool_key: PoolKey, bounds: Bounds, referrer: ContractAddress
     ) -> u64;
 
-    // Same as above but includes a referrer in the emitted event
+    // Mint an NFT that can be used for creating liquidity positions.
     fn mint_v2(ref self: TStorage, referrer: ContractAddress) -> u64;
+
+    // Checks that liquidity is zero for the given token ID and pool_key/bounds. Helps prevent burns of NFTs that have non-zero liquidity.
+    fn check_liquidity_is_zero(self: @TStorage, id: u64, pool_key: PoolKey, bounds: Bounds);
 
     // Delete the NFT. All liquidity controlled by the NFT (not withdrawn) is irrevocably locked.
     // Must be called by an operator, approved address or the owner.
@@ -59,9 +77,31 @@ pub trait IPositions<TStorage> {
         ref self: TStorage, pool_key: PoolKey, bounds: Bounds, min_liquidity: u128
     ) -> u128;
 
+    // Deposit the specified amounts in the most recently created token ID. Must be called by an operator, approved address or the owner
+    fn deposit_amounts_last(
+        ref self: TStorage,
+        pool_key: PoolKey,
+        bounds: Bounds,
+        amount0: u128,
+        amount1: u128,
+        min_liquidity: u128
+    ) -> u128;
+
     // Deposit in a specific token ID. Must be called by an operator, approved address or the owner
     fn deposit(
         ref self: TStorage, id: u64, pool_key: PoolKey, bounds: Bounds, min_liquidity: u128
+    ) -> u128;
+
+    // Deposit the specified amounts of token0 and token1 into the position with the specified ID.
+    // Must be called by an operator, approved address or the owner.
+    fn deposit_amounts(
+        ref self: TStorage,
+        id: u64,
+        pool_key: PoolKey,
+        bounds: Bounds,
+        amount0: u128,
+        amount1: u128,
+        min_liquidity: u128
     ) -> u128;
 
     // Mint and deposit in a single call
@@ -113,5 +153,22 @@ pub trait IPositions<TStorage> {
 
     // Returns the price of a pool after making an empty update to a fake position, which is useful for adding liquidity to extensions
     // with unknown before/after behavior.
-    fn get_pool_price(ref self: TStorage, pool_key: PoolKey) -> PoolPrice;
+    fn get_pool_price(self: @TStorage, pool_key: PoolKey) -> PoolPrice;
+
+    // Mint a TWAMM order and increase sold amount.
+    fn mint_and_increase_sell_amount(
+        ref self: TStorage, order_key: OrderKey, amount: u128
+    ) -> (u64, u128);
+
+    // Increase the sell amount of the last minted NFT
+    fn increase_sell_amount_last(ref self: TStorage, order_key: OrderKey, amount: u128) -> u128;
+
+    // Increase sold amount on a TWAMM order
+    fn increase_sell_amount(ref self: TStorage, id: u64, order_key: OrderKey, amount: u128) -> u128;
+
+    // Decrease sold amount on a twamm position.
+    fn decrease_sale_rate(ref self: TStorage, id: u64, order_key: OrderKey, sale_rate_delta: u128);
+
+    // Withdraws proceeds from a twamm position.
+    fn withdraw_proceeds_from_sale(ref self: TStorage, id: u64, order_key: OrderKey);
 }

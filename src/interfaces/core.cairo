@@ -59,10 +59,11 @@ pub struct LockerState {
 // An extension is an optional contract that can be specified as part of a pool key to modify pool behavior
 #[starknet::interface]
 pub trait IExtension<TStorage> {
-    // Called before a pool is initialized, and returns where the extension should be called in future operations
+    // Called before a pool is initialized
     fn before_initialize_pool(
         ref self: TStorage, caller: ContractAddress, pool_key: PoolKey, initial_tick: i129
-    ) -> CallPoints;
+    );
+
     // Called after a pool is initialized
     fn after_initialize_pool(
         ref self: TStorage, caller: ContractAddress, pool_key: PoolKey, initial_tick: i129
@@ -94,6 +95,24 @@ pub trait IExtension<TStorage> {
         caller: ContractAddress,
         pool_key: PoolKey,
         params: UpdatePositionParameters,
+        delta: Delta
+    );
+
+    // Called before collecting fees for a position
+    fn before_collect_fees(
+        ref self: TStorage,
+        caller: ContractAddress,
+        pool_key: PoolKey,
+        salt: felt252,
+        bounds: Bounds
+    );
+    // Called after collecting fees for a position
+    fn after_collect_fees(
+        ref self: TStorage,
+        caller: ContractAddress,
+        pool_key: PoolKey,
+        salt: felt252,
+        bounds: Bounds,
         delta: Delta
     );
 }
@@ -208,4 +227,10 @@ pub trait ICore<TStorage> {
     // Accumulates tokens to fees of a pool. Only callable by the extension of the specified pool key, i.e. the current locker _must_ be the extension.
     // You must call this within a lock callback.
     fn accumulate_as_fees(ref self: TStorage, pool_key: PoolKey, amount0: u128, amount1: u128);
+
+    // Set the call points for the caller, which must be a valid extension.
+    fn set_call_points(ref self: TStorage, call_points: CallPoints);
+
+    // Returns the call points for the given extension.
+    fn get_call_points(self: @TStorage, extension: ContractAddress) -> CallPoints;
 }

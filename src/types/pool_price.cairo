@@ -7,7 +7,5 @@ pub struct PoolPrice {
     pub sqrt_ratio: u256,
     // the current tick, up to 32 bits
     pub tick: i129,
-    // the places where specified extension should be called, 5 bits
-    pub call_points: CallPoints,
 }
 

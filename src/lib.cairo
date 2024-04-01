@@ -9,8 +9,14 @@ pub mod interfaces {
 }
 pub mod components {
     pub mod clear;
+    pub mod expires;
     pub mod shared_locker;
     pub mod util;
+}
+pub mod extensions {
+    pub mod interfaces {
+        pub mod twamm;
+    }
 }
 pub mod types {
     pub mod bounds;
