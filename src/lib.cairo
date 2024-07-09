@@ -10,7 +10,9 @@ pub mod interfaces {
 pub mod components {
     pub mod clear;
     pub mod expires;
+    pub mod owned;
     pub mod shared_locker;
+    pub mod upgradeable;
     pub mod util;
 }
 pub mod extensions {
