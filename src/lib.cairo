@@ -6,6 +6,7 @@ pub mod interfaces {
     pub mod positions;
     pub mod router;
     pub mod token_registry;
+    pub mod mathlib;
 }
 pub mod components {
     pub mod clear;
