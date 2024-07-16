@@ -1,6 +1,7 @@
 use ekubo::types::delta::{Delta};
 use ekubo::types::i129::{i129};
 
+// Returns the dispatcher for the math library that is deployed on sepolia and mainnet with the given interface.
 pub fn dispatcher() -> IMathLibLibraryDispatcher {
     IMathLibLibraryDispatcher {
         class_hash: 0x030abe5287c07338f1629c0b6925e1fe964804b6d71aadd356b0b345326b7de0_felt252
