@@ -1,6 +1,14 @@
 use ekubo::types::delta::{Delta};
 use ekubo::types::i129::{i129};
 
+pub fn dispatcher() -> IMathLibLibraryDispatcher {
+    IMathLibLibraryDispatcher {
+        class_hash: 0x030abe5287c07338f1629c0b6925e1fe964804b6d71aadd356b0b345326b7de0_felt252
+            .try_into()
+            .unwrap()
+    }
+}
+
 #[starknet::interface]
 pub trait IMathLib<TContractState> {
     // Computes the difference in token0 reserves between the two prices given the constant liquidity, optionally rounded up
