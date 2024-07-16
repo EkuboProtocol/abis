@@ -56,4 +56,7 @@ pub trait IMathLib<TContractState> {
 
     // Converts a tick to the sqrt ratio
     fn tick_to_sqrt_ratio(self: @TContractState, tick: i129) -> u256;
+
+    // Finds the tick s.t. tick_to_sqrt_ratio(tick) <= sqrt_ratio and tick_to_sqrt_ratio(tick + 1) > sqrt_ratio
+    fn sqrt_ratio_to_tick(self: @TContractState, sqrt_ratio: u256) -> i129;
 }
