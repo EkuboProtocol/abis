@@ -24,11 +24,12 @@ pub struct Swap {
 
 #[starknet::interface]
 pub trait IRouterLite<TContractState> {
-    // Does a single swap against a single node using tokens held by this contract, and receives the output to this contract
+    // Does a single swap against a single node using tokens held by this contract, and receives the
+    // output to this contract
     fn swap(ref self: TContractState, node: RouteNode, token_amount: TokenAmount) -> Delta;
 
-    // Does a multihop swap, where the output/input of each hop is passed as input/output of the next swap
-    // Note to do exact output swaps, the route must be given in reverse
+    // Does a multihop swap, where the output/input of each hop is passed as input/output of the
+    // next swap Note to do exact output swaps, the route must be given in reverse
     fn multihop_swap(
         ref self: TContractState, route: Array<RouteNode>, token_amount: TokenAmount
     ) -> Array<Delta>;
@@ -39,9 +40,9 @@ pub trait IRouterLite<TContractState> {
 
 #[starknet::contract]
 pub mod RouterLite {
+    use starknet::storage::{StoragePointerWriteAccess, StoragePointerReadAccess};
     use core::array::{Array, ArrayTrait, SpanTrait};
     use core::cmp::{min, max};
-    use core::integer::{u256_sqrt};
     use core::num::traits::{Zero};
     use core::option::{OptionTrait};
     use core::result::{ResultTrait};
@@ -80,69 +81,64 @@ pub mod RouterLite {
             let mut swaps = consume_callback_data::<Array<Swap>>(core, data);
             let mut outputs: Array<Array<Delta>> = ArrayTrait::new();
 
-            while let Option::Some(swap) = swaps
-                .pop_front() {
-                    let mut route = swap.route;
-                    let mut token_amount = swap.token_amount;
+            while let Option::Some(swap) = swaps.pop_front() {
+                let mut route = swap.route;
+                let mut token_amount = swap.token_amount;
 
-                    let mut deltas: Array<Delta> = ArrayTrait::new();
-                    // we track this to know how much to pay in the case of exact input and how much to pull in the case of exact output
-                    let mut first_swap_amount: Option<TokenAmount> = Option::None;
+                let mut deltas: Array<Delta> = ArrayTrait::new();
+                // we track this to know how much to pay in the case of exact input and how much to
+                // pull in the case of exact output
+                let mut first_swap_amount: Option<TokenAmount> = Option::None;
 
-                    while let Option::Some(node) = route
-                        .pop_front() {
-                            let is_token1 = token_amount.token == node.pool_key.token1;
+                while let Option::Some(node) = route.pop_front() {
+                    let is_token1 = token_amount.token == node.pool_key.token1;
 
-                            let delta = core
-                                .swap(
-                                    node.pool_key,
-                                    SwapParameters {
-                                        amount: token_amount.amount,
-                                        is_token1: is_token1,
-                                        sqrt_ratio_limit: node.sqrt_ratio_limit,
-                                        skip_ahead: node.skip_ahead,
-                                    }
-                                );
-
-                            deltas.append(delta);
-
-                            if first_swap_amount.is_none() {
-                                first_swap_amount =
-                                    if is_token1 {
-                                        Option::Some(
-                                            TokenAmount {
-                                                token: node.pool_key.token1, amount: delta.amount1
-                                            }
-                                        )
-                                    } else {
-                                        Option::Some(
-                                            TokenAmount {
-                                                token: node.pool_key.token0, amount: delta.amount0
-                                            }
-                                        )
-                                    }
+                    let delta = core
+                        .swap(
+                            node.pool_key,
+                            SwapParameters {
+                                amount: token_amount.amount,
+                                is_token1: is_token1,
+                                sqrt_ratio_limit: node.sqrt_ratio_limit,
+                                skip_ahead: node.skip_ahead,
                             }
+                        );
 
-                            token_amount =
-                                if (is_token1) {
+                    deltas.append(delta);
+
+                    if first_swap_amount.is_none() {
+                        first_swap_amount =
+                            if is_token1 {
+                                Option::Some(
                                     TokenAmount {
-                                        amount: -delta.amount0, token: node.pool_key.token0
+                                        token: node.pool_key.token1, amount: delta.amount1
                                     }
-                                } else {
+                                )
+                            } else {
+                                Option::Some(
                                     TokenAmount {
-                                        amount: -delta.amount1, token: node.pool_key.token1
+                                        token: node.pool_key.token0, amount: delta.amount0
                                     }
-                                };
+                                )
+                            }
+                    }
+
+                    token_amount =
+                        if (is_token1) {
+                            TokenAmount { amount: -delta.amount0, token: node.pool_key.token0 }
+                        } else {
+                            TokenAmount { amount: -delta.amount1, token: node.pool_key.token1 }
                         };
-
-                    let recipient = get_contract_address();
-
-                    outputs.append(deltas);
-
-                    let first = first_swap_amount.unwrap();
-                    handle_delta(core, token_amount.token, -token_amount.amount, recipient);
-                    handle_delta(core, first.token, first.amount, recipient);
                 };
+
+                let recipient = get_contract_address();
+
+                outputs.append(deltas);
+
+                let first = first_swap_amount.unwrap();
+                handle_delta(core, token_amount.token, -token_amount.amount, recipient);
+                handle_delta(core, first.token, first.amount, recipient);
+            };
 
             let mut serialized: Array<felt252> = array![];
 
