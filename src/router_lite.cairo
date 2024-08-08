@@ -40,8 +40,7 @@ pub trait IRouterLite<TContractState> {
 
 #[starknet::contract]
 pub mod RouterLite {
-    use starknet::storage::StoragePointerWriteAccess;
-    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::{StoragePointerWriteAccess, StoragePointerReadAccess};
     use core::array::{Array, ArrayTrait, SpanTrait};
     use core::cmp::{min, max};
     use core::num::traits::{Zero};
