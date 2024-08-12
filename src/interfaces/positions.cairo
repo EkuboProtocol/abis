@@ -53,11 +53,13 @@ pub trait IPositions<TStorage> {
     fn get_order_info(self: @TStorage, id: u64, order_key: OrderKey) -> OrderInfo;
 
     // Create a new NFT that represents liquidity in a pool. Returns the newly minted token ID
-    // This function is deprecated. The pool_key and bounds arguments are not used. Instead, use mint_v2.
+    // This function is deprecated. The pool_key and bounds arguments are not used. Instead, use
+    // mint_v2.
     fn mint(ref self: TStorage, pool_key: PoolKey, bounds: Bounds) -> u64;
 
     // Same as above but includes a referrer in the emitted event
-    // This function is deprecated. The pool_key and bounds arguments are not used. Instead, use mint_v2.
+    // This function is deprecated. The pool_key and bounds arguments are not used. Instead, use
+    // mint_v2.
     fn mint_with_referrer(
         ref self: TStorage, pool_key: PoolKey, bounds: Bounds, referrer: ContractAddress
     ) -> u64;
@@ -65,19 +67,22 @@ pub trait IPositions<TStorage> {
     // Mint an NFT that can be used for creating liquidity positions.
     fn mint_v2(ref self: TStorage, referrer: ContractAddress) -> u64;
 
-    // Checks that liquidity is zero for the given token ID and pool_key/bounds. Helps prevent burns of NFTs that have non-zero liquidity.
+    // Checks that liquidity is zero for the given token ID and pool_key/bounds. Helps prevent burns
+    // of NFTs that have non-zero liquidity.
     fn check_liquidity_is_zero(self: @TStorage, id: u64, pool_key: PoolKey, bounds: Bounds);
 
     // Delete the NFT. All liquidity controlled by the NFT (not withdrawn) is irrevocably locked.
     // Must be called by an operator, approved address or the owner.
     fn unsafe_burn(ref self: TStorage, id: u64);
 
-    // Deposit in the most recently created token ID. Must be called by an operator, approved address or the owner
+    // Deposit in the most recently created token ID. Must be called by an operator, approved
+    // address or the owner
     fn deposit_last(
         ref self: TStorage, pool_key: PoolKey, bounds: Bounds, min_liquidity: u128
     ) -> u128;
 
-    // Deposit the specified amounts in the most recently created token ID. Must be called by an operator, approved address or the owner
+    // Deposit the specified amounts in the most recently created token ID. Must be called by an
+    // operator, approved address or the owner
     fn deposit_amounts_last(
         ref self: TStorage,
         pool_key: PoolKey,
@@ -123,7 +128,8 @@ pub trait IPositions<TStorage> {
         ref self: TStorage, pool_key: PoolKey, bounds: Bounds, min_liquidity: u128
     ) -> (u64, u128, u256, u256);
 
-    // Collect fees for the token ID to the caller. Must be called by an operator, approved address or the owner.
+    // Collect fees for the token ID to the caller. Must be called by an operator, approved address
+    // or the owner.
     fn collect_fees(ref self: TStorage, id: u64, pool_key: PoolKey, bounds: Bounds) -> (u128, u128);
 
     // Withdraw liquidity from a specific token ID to the caller and optionally also collect fees.
@@ -140,7 +146,8 @@ pub trait IPositions<TStorage> {
         collect_fees: bool
     ) -> (u128, u128);
 
-    // Withdraw liquidity from a specific token ID to the caller. Must be called by an operator, approved address or the owner.
+    // Withdraw liquidity from a specific token ID to the caller. Must be called by an operator,
+    // approved address or the owner.
     fn withdraw_v2(
         ref self: TStorage,
         id: u64,
@@ -151,8 +158,8 @@ pub trait IPositions<TStorage> {
         min_token1: u128
     ) -> (u128, u128);
 
-    // Returns the price of a pool after making an empty update to a fake position, which is useful for adding liquidity to extensions
-    // with unknown before/after behavior.
+    // Returns the price of a pool after making an empty update to a fake position, which is useful
+    // for adding liquidity to extensions with unknown before/after behavior.
     fn get_pool_price(self: @TStorage, pool_key: PoolKey) -> PoolPrice;
 
     // Mint a TWAMM order and increase sold amount.
