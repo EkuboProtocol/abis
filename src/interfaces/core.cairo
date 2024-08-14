@@ -196,6 +196,11 @@ pub trait ICore<TContractState> {
         self: @TContractState, pool_key: PoolKey, from: i129, skip_ahead: u128
     ) -> (i129, bool);
 
+    // Withdraws all protocol fees for a given token and returns the amount withdrawn
+    fn withdraw_all_protocol_fees(
+        ref self: TContractState, recipient: ContractAddress, token: ContractAddress
+    ) -> u128;
+
     // Withdraws any fees collected by the contract (only the owner can call this function)
     fn withdraw_protocol_fees(
         ref self: TContractState, recipient: ContractAddress, token: ContractAddress, amount: u128
