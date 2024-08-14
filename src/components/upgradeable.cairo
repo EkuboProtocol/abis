@@ -1,15 +1,15 @@
 use starknet::{ClassHash};
 
-// Any contract that is upgradeable must implement this
-#[starknet::interface]
-pub trait IHasInterface<TContractState> {
-    fn get_primary_interface_id(self: @TContractState) -> felt252;
-}
-
 #[starknet::interface]
 pub trait IUpgradeable<TStorage> {
     // Update the class hash of the contract.
     fn replace_class_hash(ref self: TStorage, class_hash: ClassHash);
+}
+
+// Any contract that is upgradeable must implement this
+#[starknet::interface]
+pub trait IHasInterface<TContractState> {
+    fn get_primary_interface_id(self: @TContractState) -> felt252;
 }
 
 #[starknet::component]
@@ -26,7 +26,7 @@ pub mod Upgradeable {
     use super::{IHasInterface, IHasInterfaceDispatcher, IHasInterfaceDispatcherTrait};
 
     #[storage]
-    struct Storage {}
+    pub struct Storage {}
 
     #[derive(starknet::Event, Drop)]
     pub struct ClassHashReplaced {

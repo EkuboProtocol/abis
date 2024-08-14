@@ -3,7 +3,7 @@ use core::num::traits::{Zero};
 use core::option::{OptionTrait};
 use core::serde::Serde;
 use ekubo::components::util::{serialize};
-use ekubo::interfaces::core::{ICoreDispatcher, ICoreDispatcherTrait};
+use ekubo::interfaces::core::{ICoreDispatcher, ICoreDispatcherTrait, IForwardeeDispatcher};
 use ekubo::interfaces::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
 use ekubo::types::i129::{i129};
 use starknet::{
@@ -15,6 +15,14 @@ pub fn call_core_with_callback<TInput, TOutput, +Serde<TInput>, +Serde<TOutput>>
     core: ICoreDispatcher, input: @TInput
 ) -> TOutput {
     let mut output_span = core.lock(serialize(input).span());
+
+    Serde::deserialize(ref output_span).expect('DESERIALIZE_RESULT_FAILED')
+}
+
+pub fn forward_lock<TInput, TOutput, +Serde<TInput>, +Serde<TOutput>>(
+    core: ICoreDispatcher, forwardee: IForwardeeDispatcher, input: @TInput
+) -> TOutput {
+    let mut output_span = core.forward(forwardee, serialize(input).span());
 
     Serde::deserialize(ref output_span).expect('DESERIALIZE_RESULT_FAILED')
 }
