@@ -1,3 +1,4 @@
+use ekubo::types::fees_per_liquidity::{FeesPerLiquidity};
 use ekubo::types::i129::{i129, i129Trait};
 use ekubo::types::keys::{PoolKey};
 use starknet::{ContractAddress, ClassHash};
@@ -45,10 +46,12 @@ pub trait ITWAMM<TContractState> {
     ) -> SaleRateState;
 
     // Return the current reward rate
-    fn get_reward_rate(self: @TContractState, key: StateKey) -> (felt252, felt252);
+    fn get_reward_rate(self: @TContractState, key: StateKey) -> FeesPerLiquidity;
 
     // Returns the reward rate stored for the given time
-    fn get_time_reward_rate(self: @TContractState, key: StateKey, time: u64) -> (felt252, felt252);
+    fn get_time_reward_rate_before(
+        self: @TContractState, key: StateKey, time: u64
+    ) -> FeesPerLiquidity;
 
     // Return the sale rate net for a specific time
     fn get_sale_rate_net(self: @TContractState, key: StateKey, time: u64) -> u128;
@@ -60,14 +63,6 @@ pub trait ITWAMM<TContractState> {
     fn next_initialized_time(
         self: @TContractState, key: StateKey, from: u64, max_time: u64
     ) -> (u64, bool);
-
-    // Update an existing twamm order
-    fn update_order(
-        ref self: TContractState, salt: felt252, order_key: OrderKey, sale_rate_delta: i129
-    );
-
-    // Collect proceeds from a twamm order
-    fn collect_proceeds(ref self: TContractState, salt: felt252, order_key: OrderKey);
 
     // Execute virtual orders
     fn execute_virtual_orders(ref self: TContractState, key: StateKey);
