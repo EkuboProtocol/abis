@@ -18,14 +18,15 @@ pub trait Ownable<TContractState> {
 
 #[starknet::component]
 pub mod Owned {
-    use starknet::storage::{StoragePointerWriteAccess, StoragePointerReadAccess};
     use core::num::traits::{Zero};
+    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::StoragePointerWriteAccess;
     use starknet::{get_caller_address, contract_address_const};
     use super::{ContractAddress, IOwned, Ownable};
 
     #[storage]
-    struct Storage {
-        owner: ContractAddress,
+    pub struct Storage {
+        pub owner: ContractAddress,
     }
 
     #[derive(starknet::Event, Drop)]
