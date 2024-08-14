@@ -1,6 +1,6 @@
 use starknet::{ContractAddress};
 
-// A simplified interface for a fungible token standard. 
+// A simplified interface for a fungible token standard.
 #[starknet::interface]
 pub trait IERC20<TContractState> {
     // Transfers the amount to the recipient from the caller
