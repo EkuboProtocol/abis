@@ -33,6 +33,28 @@ pub struct SaleRateState {
     pub last_virtual_order_time: u64
 }
 
+#[derive(Serde, Copy, Drop)]
+pub struct UpdateSaleRateCallbackData {
+    pub salt: felt252,
+    pub order_key: OrderKey,
+    pub sale_rate_delta: i129,
+}
+
+#[derive(Serde, Copy, Drop)]
+pub struct CollectProceedsCallbackData {
+    pub salt: felt252,
+    pub order_key: OrderKey,
+}
+
+#[derive(Serde, Copy, Drop)]
+pub enum ForwardCallbackData {
+    // Returns an i129 representing the token delta required to update the sale rate, e.g. positive
+    // for increases and negative for decreases
+    UpdateSaleRate: UpdateSaleRateCallbackData,
+    // Returns a u128 representing the amount of proceeds collected
+    CollectProceeds: CollectProceedsCallbackData
+}
+
 #[starknet::interface]
 pub trait ITWAMM<TContractState> {
     // Return the current state of the given order
