@@ -6,7 +6,7 @@ use ekubo::types::i129::{i129};
 use ekubo::types::keys::{PositionKey, PoolKey, SavedBalanceKey};
 use ekubo::types::pool_price::{PoolPrice};
 use ekubo::types::position::{Position};
-use starknet::{ContractAddress, ClassHash};
+use starknet::{ContractAddress};
 
 // This interface must be implemented by any contract that intends to call ICore#lock
 #[starknet::interface]

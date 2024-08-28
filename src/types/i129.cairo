@@ -1,4 +1,3 @@
-use core::array::{ArrayTrait};
 use core::hash::{HashStateTrait, Hash};
 use core::num::traits::{Zero};
 use core::ops::{AddAssign, SubAssign, MulAssign, DivAssign};

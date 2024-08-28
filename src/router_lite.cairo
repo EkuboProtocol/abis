@@ -41,24 +41,15 @@ pub trait IRouterLite<TContractState> {
 #[starknet::contract]
 pub mod RouterLite {
     use starknet::storage::{StoragePointerWriteAccess, StoragePointerReadAccess};
-    use core::array::{Array, ArrayTrait, SpanTrait};
-    use core::cmp::{min, max};
-    use core::num::traits::{Zero};
+    use core::array::{Array, ArrayTrait};
     use core::option::{OptionTrait};
-    use core::result::{ResultTrait};
-    use core::traits::{Into};
     use ekubo::components::clear::{ClearImpl};
     use ekubo::components::shared_locker::{
         consume_callback_data, handle_delta, call_core_with_callback
     };
     use ekubo::interfaces::core::{ICoreDispatcher, ICoreDispatcherTrait, ILocker, SwapParameters};
-    use ekubo::interfaces::erc20::{IERC20Dispatcher, IERC20DispatcherTrait};
-    use ekubo::types::i129::{i129, i129Trait};
-    use starknet::syscalls::{call_contract_syscall};
-
-    use starknet::{get_caller_address, get_contract_address};
-
-    use super::{ContractAddress, PoolKey, Delta, IRouterLite, RouteNode, TokenAmount, Swap};
+    use starknet::{get_contract_address};
+    use super::{Delta, IRouterLite, RouteNode, TokenAmount, Swap};
 
     #[abi(embed_v0)]
     impl Clear = ekubo::components::clear::ClearImpl<ContractState>;

@@ -17,13 +17,10 @@ pub mod Upgradeable {
     use core::array::SpanTrait;
     use core::num::traits::{Zero};
     use core::result::ResultTrait;
-    use ekubo::components::owned::{IOwned, Ownable};
+    use ekubo::components::owned::{Ownable};
     use super::{IUpgradeable};
-    use starknet::{
-        ClassHash, ContractAddress, syscalls::{replace_class_syscall, library_call_syscall},
-        get_contract_address,
-    };
-    use super::{IHasInterface, IHasInterfaceDispatcher, IHasInterfaceDispatcherTrait};
+    use starknet::{ClassHash, syscalls::{replace_class_syscall, library_call_syscall}};
+    use super::{IHasInterface};
 
     #[storage]
     pub struct Storage {}

@@ -17,4 +17,4 @@ casm = true
 allowed-libfuncs-list.name = "audited"
 
 [dev-dependencies]
-cairo_test = "2.7.1"
+cairo_test = "2.8.0"

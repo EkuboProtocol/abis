@@ -1,7 +1,4 @@
-use starknet::{contract_address_const, ContractAddress};
-use core::option::{Option, OptionTrait};
-use core::traits::{Into, TryInto};
-use ekubo::types::i129::{i129};
+use starknet::{ContractAddress};
 use ekubo::types::bounds::{Bounds};
 
 // Uniquely identifies a pool

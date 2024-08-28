@@ -1,7 +1,4 @@
-use starknet::ContractAddress;
-use ekubo::types::keys::{PositionKey, PoolKey};
-use ekubo::types::i129::{i129, i129Trait};
-use core::traits::{Into};
+use ekubo::types::i129::{i129};
 
 // Tick bounds for a position
 #[derive(Copy, Drop, Serde, PartialEq, Hash)]
