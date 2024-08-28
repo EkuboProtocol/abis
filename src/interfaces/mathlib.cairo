@@ -5,7 +5,7 @@ use ekubo::types::i129::{i129};
 // given interface.
 pub fn dispatcher() -> IMathLibLibraryDispatcher {
     IMathLibLibraryDispatcher {
-        class_hash: 0x030abe5287c07338f1629c0b6925e1fe964804b6d71aadd356b0b345326b7de0_felt252
+        class_hash: 0x037d63129281c4c42cba74218c809ffc9e6f87ca74e0bdabb757a7f236ca59c3
             .try_into()
             .unwrap()
     }
