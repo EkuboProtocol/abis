@@ -1,6 +1,6 @@
-use ekubo::types::fees_per_liquidity::{FeesPerLiquidity};
-use ekubo::types::i129::{i129};
-use starknet::{ContractAddress};
+use ekubo::types::fees_per_liquidity::FeesPerLiquidity;
+use ekubo::types::i129::i129;
+use starknet::ContractAddress;
 
 #[derive(Drop, Copy, Serde, Hash, PartialEq, Debug)]
 pub struct OrderKey {
@@ -8,7 +8,7 @@ pub struct OrderKey {
     pub buy_token: ContractAddress,
     pub fee: u128,
     pub start_time: u64,
-    pub end_time: u64
+    pub end_time: u64,
 }
 
 #[derive(Serde, Drop, Copy)]
@@ -29,7 +29,7 @@ pub struct OrderInfo {
 pub struct SaleRateState {
     pub token0_sale_rate: u128,
     pub token1_sale_rate: u128,
-    pub last_virtual_order_time: u64
+    pub last_virtual_order_time: u64,
 }
 
 #[derive(Serde, Copy, Drop)]
@@ -51,19 +51,19 @@ pub enum ForwardCallbackData {
     // for increases and negative for decreases
     UpdateSaleRate: UpdateSaleRateCallbackData,
     // Returns a u128 representing the amount of proceeds collected
-    CollectProceeds: CollectProceedsCallbackData
+    CollectProceeds: CollectProceedsCallbackData,
 }
 
 #[starknet::interface]
 pub trait ITWAMM<TContractState> {
     // Return the current state of the given order
     fn get_order_info(
-        self: @TContractState, owner: ContractAddress, salt: felt252, order_key: OrderKey
+        self: @TContractState, owner: ContractAddress, salt: felt252, order_key: OrderKey,
     ) -> OrderInfo;
 
     // Returns the current sale rates and the latest time orders executed for the given pool
     fn get_sale_rate_and_last_virtual_order_time(
-        self: @TContractState, key: StateKey
+        self: @TContractState, key: StateKey,
     ) -> SaleRateState;
 
     // Return the current reward rate
@@ -71,7 +71,7 @@ pub trait ITWAMM<TContractState> {
 
     // Returns the reward rate stored for the given time
     fn get_time_reward_rate_before(
-        self: @TContractState, key: StateKey, time: u64
+        self: @TContractState, key: StateKey, time: u64,
     ) -> FeesPerLiquidity;
 
     // Return the sale rate net for a specific time
@@ -82,7 +82,7 @@ pub trait ITWAMM<TContractState> {
 
     // Return the next initialized time
     fn next_initialized_time(
-        self: @TContractState, key: StateKey, from: u64, max_time: u64
+        self: @TContractState, key: StateKey, from: u64, max_time: u64,
     ) -> (u64, bool);
 
     // Execute virtual orders

@@ -7,6 +7,10 @@ pub mod interfaces {
     pub mod router;
     pub mod token_registry;
     pub mod mathlib;
+    pub mod extensions {
+        pub mod twamm;
+        pub mod limit_orders;
+    }
 }
 pub mod components {
     pub mod clear;
@@ -15,11 +19,6 @@ pub mod components {
     pub mod shared_locker;
     pub mod upgradeable;
     pub mod util;
-}
-pub mod extensions {
-    pub mod interfaces {
-        pub mod twamm;
-    }
 }
 pub mod types {
     pub mod bounds;
