@@ -34,5 +34,5 @@ pub struct PositionKey {
 pub struct SavedBalanceKey {
     pub owner: ContractAddress,
     pub token: ContractAddress,
-    pub salt: u64,
+    pub salt: felt252,
 }
