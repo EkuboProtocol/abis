@@ -21,7 +21,7 @@ pub struct PoolKey {
 // bounds is the price range where the liquidity of the position is active
 #[derive(Copy, Drop, Serde, PartialEq, Hash)]
 pub struct PositionKey {
-    pub salt: u64,
+    pub salt: felt252,
     pub owner: ContractAddress,
     pub bounds: Bounds,
 }
